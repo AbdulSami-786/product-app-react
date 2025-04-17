@@ -1,24 +1,47 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
+import { addcarts } from '../config/redux/reducer/cartSlice'
+import { useDispatch } from 'react-redux'
 import useFetch from './hooks/useFetch'
+import Swal from 'sweetalert2' // ✅ Import SweetAlert2
 
-function singleproduct() {
+function showAlert() {
+  Swal.fire({
+    position: "top-end",
+    icon: "success",
+    title: "Product added to cart!",
+    showConfirmButton: false,
+    timer: 1500
+  })
+}
+
+function SingleProduct() {
+  const dispatch = useDispatch()
   const params = useParams()
   const [load, error, data] = useFetch(`https://dummyjson.com/products/${params.id}`)
-  if(load){
-    return<h1 className='flex justify-center h-[80vh] items-center text-3xl font-bold'>LOADING <span className="loading loading-infinity loading-xl"></span></h1>
+
+  if (load) {
+    return (
+      <h1 className='flex justify-center h-[80vh] items-center text-3xl font-bold'>
+        LOADING <span className="loading loading-infinity loading-xl"></span>
+      </h1>
+    )
   }
-  if(error){
-    return <h1 className='flex justify-center w-[80vh] m-auto h-[80vh] items-center text-1xl font-bold'>ERROR <br /><br />
-    1. Check Your Internet Connection: Ensure that your internet connection is stable and working properly.
-  2. Server Error: There might be a server-side issue. Please try again later or contact our support team.
-  3. Invalid Input: Make sure you have entered the correct information. Check for any typos or invalid characters.
-  4. Try Refreshing the Page: Sometimes, a simple page refresh can resolve the issue. Try refreshing the page and see if the error persists.
-  
-  If the issue persists, please contact our support team for further assistance</h1>
+
+  if (error) {
+    return (
+      <h1 className='flex justify-center w-[80vh] m-auto h-[80vh] items-center text-1xl font-bold'>
+        ERROR <br /><br />
+        1. Check Your Internet Connection<br />
+        2. Server Error<br />
+        3. Invalid Input<br />
+        4. Try Refreshing the Page
+      </h1>
+    )
   }
+
   return (
-    <div className="container mx-auto p-4 pt-6 md:p-6 lg:p-12 xl:p-24">
+    <div className="container mx-auto p-4 pt-6 md:p-6 lg:p-12 xl:p-24 mt-[70px]">
       <div className="flex flex-wrap -mx-4">
         <div className="w-full md:w-1/2 xl:w-1/3 p-4">
           <img
@@ -40,20 +63,20 @@ function singleproduct() {
               <h2 className="text-lg font-bold mb-2">Category:</h2>
               <p className="text-lg">{data.category}</p>
             </div>
-            <div className="w-full md:w-1/2 xl:w-1/3 p-2">
-              <h2 className="text-lg font-bold mb-2">Availability:</h2>
-              <p className="text-lg">{data.availabilityStatus}</p>
-            </div>
           </div>
-          <button className="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded-lg">
+          <button
+            onClick={() => {
+              dispatch(addcarts(data))
+              showAlert()
+            }}
+            className="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded-lg"
+          >
             Add to Cart
           </button>
         </div>
       </div>
     </div>
-  );
+  )
 }
-  
-  
 
-export default singleproduct
+export default SingleProduct
